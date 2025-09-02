@@ -5,29 +5,259 @@
         xmlns:numericInput="http://gu.se/NumericInput"
         xmlns:local="clr-namespace:HP663xxCtrl"
         x:Class="HP663xxCtrl.MainWindow"
-        Title="HP663xx Control" Closing="Window_Closing" >
+        Title="HP663xx Control" 
+        Closing="Window_Closing"
+        MinWidth="1200"
+        MinHeight="800"
+        Width="1400"
+        Height="1000"
+        WindowStartupLocation="CenterScreen"
+        Background="#FAFAFA">
+    
     <Window.DataContext>
         <local:MainWindowVm />
     </Window.DataContext>
+    
     <Window.Resources>
+        <!-- Converters -->
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        <Style TargetType="{x:Type Control}" x:Key="BoldFixed">
-            <Setter Property="FontFamily" Value="Consolas" />
-            <Setter Property="FontWeight" Value="Bold"/>
+        
+        <!-- Color Palette -->
+        <SolidColorBrush x:Key="PrimaryBrush" Color="#1976D2"/>
+        <SolidColorBrush x:Key="PrimaryLightBrush" Color="#42A5F5"/>
+        <SolidColorBrush x:Key="PrimaryDarkBrush" Color="#0D47A1"/>
+        <SolidColorBrush x:Key="AccentBrush" Color="#FF5722"/>
+        <SolidColorBrush x:Key="SuccessBrush" Color="#4CAF50"/>
+        <SolidColorBrush x:Key="WarningBrush" Color="#FF9800"/>
+        <SolidColorBrush x:Key="ErrorBrush" Color="#F44336"/>
+        <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="SurfaceVariantBrush" Color="#F5F5F5"/>
+        <SolidColorBrush x:Key="OnSurfaceBrush" Color="#212121"/>
+        <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="#757575"/>
+        
+        <!-- Typography -->
+        <FontFamily x:Key="PrimaryFont">Segoe UI</FontFamily>
+        <FontFamily x:Key="MonospaceFont">Consolas</FontFamily>
+        
+        <!-- Base Styles -->
+        <Style TargetType="Window">
+            <Setter Property="FontFamily" Value="{StaticResource PrimaryFont}"/>
+            <Setter Property="FontSize" Value="14"/>
         </Style>
-        <Style TargetType="{x:Type TextBlock}" x:Key="TB_BoldFixed">
-            <Setter Property="FontFamily" Value="Consolas" />
-            <Setter Property="FontWeight" Value="Bold"/>
+        
+        <!-- Modern Button Style -->
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="Margin" Value="3"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="{StaticResource PrimaryDarkBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="{StaticResource OnSurfaceVariantBrush}"/>
+                                <Setter Property="Foreground" Value="#BDBDBD"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
-        <Style TargetType="{x:Type FrameworkElement}" x:Key="Ch2_Visibility">
+        
+        <!-- Secondary Button Style -->
+        <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
+        <!-- Modern GroupBox Style -->
+        <Style x:Key="ModernGroupBox" TargetType="GroupBox">
+            <Setter Property="BorderBrush" Value="{StaticResource OnSurfaceVariantBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Margin" Value="6"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GroupBox">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" 
+                                    Background="{StaticResource SurfaceBrush}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="0,0,0,1"
+                                    Padding="8,4">
+                                <ContentPresenter ContentSource="Header" 
+                                                RecognizesAccessKey="True">
+                                    <ContentPresenter.Resources>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="FontWeight" Value="SemiBold"/>
+                                        </Style>
+                                    </ContentPresenter.Resources>
+                                </ContentPresenter>
+                            </Border>
+                            <Border Grid.Row="1" 
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="1,0,1,1"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter/>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <!-- Modern TextBlock Style -->
+        <Style x:Key="ModernTextBlock" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource PrimaryFont}"/>
+            <Setter Property="Foreground" Value="{StaticResource OnSurfaceBrush}"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        
+        <!-- Monospace TextBlock Style -->
+        <Style x:Key="MonospaceTextBlock" TargetType="TextBlock" BasedOn="{StaticResource ModernTextBlock}">
+            <Setter Property="FontFamily" Value="{StaticResource MonospaceFont}"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="16"/>
+        </Style>
+        
+        <!-- Modern ComboBox Style -->
+        <Style x:Key="ModernComboBox" TargetType="ComboBox">
+            <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource OnSurfaceVariantBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="6,4"/>
+            <Setter Property="Margin" Value="3"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        
+        <!-- Modern DoubleBox Style -->
+        <Style x:Key="ModernDoubleBox" TargetType="numericInput:DoubleBox">
+            <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource OnSurfaceVariantBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="6,4"/>
+            <Setter Property="Margin" Value="3"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        
+        <!-- Modern IntBox Style -->
+        <Style x:Key="ModernIntBox" TargetType="numericInput:IntBox">
+            <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource OnSurfaceVariantBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="6,4"/>
+            <Setter Property="Margin" Value="3"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        
+        <!-- Modern CheckBox Style -->
+        <Style x:Key="ModernCheckBox" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{StaticResource OnSurfaceBrush}"/>
+            <Setter Property="Margin" Value="3"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        
+        <!-- Modern RadioButton Style -->
+        <Style x:Key="ModernRadioButton" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="{StaticResource OnSurfaceBrush}"/>
+            <Setter Property="Margin" Value="3"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        
+        <!-- Status Indicators -->
+        <Style x:Key="StatusIndicator" TargetType="Border">
+            <Setter Property="Width" Value="12"/>
+            <Setter Property="Height" Value="12"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Margin" Value="8,0"/>
+        </Style>
+        
+        <!-- Visibility Styles -->
+        <Style TargetType="FrameworkElement" x:Key="Ch2_Visibility">
             <Setter Property="Visibility" Value="{Binding HasChannel2, Converter={StaticResource BooleanToVisibilityConverter}}" />
         </Style>
-        <Style TargetType="{x:Type FrameworkElement}" x:Key="OVP_Visibility">
+        <Style TargetType="FrameworkElement" x:Key="OVP_Visibility">
             <Setter Property="Visibility" Value="{Binding HasOVP, Converter={StaticResource BooleanToVisibilityConverter}}" />
         </Style>
+        
+        <!-- Modern Menu Style -->
+        <Style x:Key="ModernMenu" TargetType="Menu">
+            <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource OnSurfaceBrush}"/>
+        </Style>
+        
+        <!-- Modern StatusBar Style -->
+        <Style x:Key="ModernStatusBar" TargetType="StatusBar">
+            <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource OnSurfaceBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource OnSurfaceVariantBrush}"/>
+            <Setter Property="BorderThickness" Value="0,1,0,0"/>
+            <Setter Property="FontFamily" Value="{StaticResource MonospaceFont}"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+        
+        <!-- Modern TabControl Style -->
+        <Style x:Key="ModernTabControl" TargetType="TabControl">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        
+        <!-- Modern TabItem Style -->
+        <Style x:Key="ModernTabItem" TargetType="TabItem">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource OnSurfaceVariantBrush}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="16,8"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                    <Setter Property="BorderThickness" Value="0,0,0,2"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
-    <DockPanel>
-        <Menu DockPanel.Dock="Top">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Modern Menu -->
+        <Menu Grid.Row="0" Style="{StaticResource ModernMenu}">
             <MenuItem Header="_File">
                 <MenuItem Header="E_xit" Click="OnMenuItem_Exit"/>
             </MenuItem>
@@ -40,7 +270,593 @@
                 <MenuItem Header="Download Firmware" Command="{Binding DLFirmwareCommand}"/>
             </MenuItem>
         </Menu>
-        <StatusBar DockPanel.Dock="Bottom" FontFamily="Consolas">
+        
+        <!-- Main Content -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="350"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <!-- Left Panel -->
+            <ScrollViewer Grid.Column="0" 
+                         VerticalScrollBarVisibility="Auto"
+                         Background="{StaticResource SurfaceVariantBrush}"
+                         Padding="12">
+                <StackPanel>
+                    <!-- Connection Section -->
+                    <GroupBox Header="Connection" Style="{StaticResource ModernGroupBox}">
+                        <StackPanel>
+                            <TextBlock Text="Address:" Style="{StaticResource ModernTextBlock}" Margin="0,0,0,4"/>
+                            <ComboBox x:Name="AddressComboBox" 
+                                     Style="{StaticResource ModernComboBox}"
+                                     AllowDrop="True" 
+                                     IsEditable="True" 
+                                     Text="GPIB0::5::INSTR" />
+                            <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                <Button x:Name="ConnectButton" 
+                                        Content="Connect" 
+                                        Style="{StaticResource ModernButton}"
+                                        Click="GoButton_Click"/>
+                                <Button x:Name="DisconnectButton" 
+                                        Content="Disconnect" 
+                                        Style="{StaticResource SecondaryButton}"
+                                        Click="DisconnectButton_Click" 
+                                        IsEnabled="False"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+                    
+                    <!-- Channel 1 Section -->
+                    <GroupBox Header="Channel 1" Style="{StaticResource ModernGroupBox}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <TextBlock x:Name="Ch1VLabel" 
+                                       Text="+0.--- V" 
+                                       Grid.Row="0" 
+                                       Grid.Column="0"  
+                                       HorizontalAlignment="Center" 
+                                       Style="{StaticResource MonospaceTextBlock}"
+                                       Foreground="{StaticResource PrimaryBrush}"/>
+                            <TextBlock x:Name="Ch1ILabel" 
+                                       Text="+0.---- A" 
+                                       Grid.Row="0" 
+                                       Grid.Column="1"  
+                                       HorizontalAlignment="Center" 
+                                       Style="{StaticResource MonospaceTextBlock}"
+                                       Foreground="{StaticResource AccentBrush}"/>
+                            <TextBlock x:Name="Ch1StatusLabel"  
+                                       Grid.Row="1" 
+                                       Grid.Column="0" 
+                                       Grid.ColumnSpan="2" 
+                                       Style="{StaticResource MonospaceTextBlock}" 
+                                       HorizontalAlignment="Center"
+                                       FontSize="12">
+                                <TextBlock.RenderTransform>
+                                    <ScaleTransform ScaleX="0.8" ScaleY="0.8" />
+                                </TextBlock.RenderTransform>
+                                <Run Text="OVP OCP CV CC+"/>
+                            </TextBlock>
+                        </Grid>
+                    </GroupBox>
+                    
+                    <!-- Channel 2 Section -->
+          <GroupBox x:Name="CH2ReadbackGroupBox" 
+                              Header="Channel 2" 
+                              Style="{StaticResource ModernGroupBox}">
+            <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock x:Name="Ch2VLabel"  
+                                       Text="+0.--- V" 
+                                       Grid.Row="0" 
+                                       Grid.Column="0"  
+                                       HorizontalAlignment="Center" 
+                                       Style="{StaticResource MonospaceTextBlock}"
+                                       Foreground="{StaticResource PrimaryBrush}"/>
+                                                         <TextBlock x:Name="Ch2ILabel" 
+                                        Text="+0.---- A" 
+                                        Grid.Row="0" 
+                                        Grid.Column="1"  
+                                        HorizontalAlignment="Center" 
+                                        Style="{StaticResource MonospaceTextBlock}"
+                                        Foreground="{StaticResource AccentBrush}"/>
+                            <TextBlock x:Name="Ch2StatusLabel" 
+                                       Grid.Row="1" 
+                                       Grid.Column="0" 
+                                       Grid.ColumnSpan="2" 
+                                       Style="{StaticResource MonospaceTextBlock}" 
+                                       HorizontalAlignment="Center"
+                                       FontSize="12">
+                                <TextBlock.RenderTransform>
+                                    <ScaleTransform ScaleX="0.8" ScaleY="0.8" />
+                                </TextBlock.RenderTransform>
+                                <Run Text="OCP CV CC"/>
+                            </TextBlock>
+                        </Grid>
+                    </GroupBox>
+                    
+                    <!-- DVM Section -->
+                    <GroupBox x:Name="DVMGroupBox" 
+                              Header="DVM" 
+                              Style="{StaticResource ModernGroupBox}"
+                              Visibility="{Binding HasDVM, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock x:Name="DVMVLabel" 
+                                       Text="+0.--- V" 
+                                       Grid.Row="0" 
+                                       Grid.Column="0"  
+                                       HorizontalAlignment="Center" 
+                                       Style="{StaticResource MonospaceTextBlock}"
+                                       Foreground="{StaticResource SuccessBrush}"/>
+                        </Grid>
+                    </GroupBox>
+                    
+                    <!-- Program Section -->
+                    <GroupBox Header="Program" Style="{StaticResource ModernGroupBox}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="1: " Style="{StaticResource ModernTextBlock}"/>
+              <TextBlock x:Name="CH2ProgramLabel" Grid.Row="2" Grid.Column="0" Text="2: " Style="{StaticResource ModernTextBlock}">
+              </TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="V" HorizontalAlignment="Center" Style="{StaticResource ModernTextBlock}"/>
+                            <TextBlock Grid.Row="0" Grid.Column="2" Text="I" HorizontalAlignment="Center" Style="{StaticResource ModernTextBlock}"/>
+                            
+                            <numericInput:DoubleBox x:Name="CH1VTextBox" 
+                                                   Grid.Row="1" 
+                                                   Grid.Column="1" 
+                                                   Value="{Binding V1}"
+                                                   Style="{StaticResource ModernDoubleBox}"/>
+                            <numericInput:DoubleBox x:Name="CH1ITextBox" 
+                                                   Grid.Row="1" 
+                                                   Grid.Column="2" 
+                                                   MinValue="0.0" 
+                                                   Value="{Binding I1}"
+                                                   Style="{StaticResource ModernDoubleBox}"/>
+                                                         <numericInput:DoubleBox x:Name="CH2VTextBox" 
+                                                    Grid.Row="2" 
+                                                    Grid.Column="1" 
+                                                    MinValue="0.0" 
+                                                    Value="{Binding V2}" 
+                                                    Style="{StaticResource ModernDoubleBox}">
+                             </numericInput:DoubleBox>
+              <numericInput:DoubleBox x:Name="CH2ITextBox" 
+                                                    Grid.Row="2" 
+                                                    Grid.Column="2" 
+                                                    MinValue="0.0" 
+                                                    Value="{Binding I2}" 
+                                                    Style="{StaticResource ModernDoubleBox}">
+              </numericInput:DoubleBox>
+                            
+                            <StackPanel Grid.Row="3" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="0,6,0,0">
+                                <CheckBox x:Name="EnableOutputCheckbox" Content="EN" Style="{StaticResource ModernCheckBox}"/>
+                                <CheckBox x:Name="OCPCheckbox" Content="OCP" Style="{StaticResource ModernCheckBox}"/>
+                            </StackPanel>
+                            
+                                                         <DockPanel Grid.Row="4" Grid.ColumnSpan="3" Margin="0,4,0,0">
+                                 <DockPanel.Style>
+                                     <Style TargetType="DockPanel">
+                                         <Setter Property="Visibility" Value="{Binding HasOVP, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                     </Style>
+                                 </DockPanel.Style>
+                                <CheckBox DockPanel.Dock="Left" 
+                                          x:Name="OVPCheckbox" 
+                                          Content="OVP:" 
+                                          Style="{StaticResource ModernCheckBox}"
+                                          VerticalAlignment="Center"/>
+                                <numericInput:DoubleBox x:Name="OVPLevelTextBox" 
+                                                       Value="{Binding OVPLevel}" 
+                                                       CanValueBeNull="True" 
+                                                       MinValue="0" 
+                                                       MaxValue="22"
+                                                       Style="{StaticResource ModernDoubleBox}"/>
+                            </DockPanel>
+                            
+                            <StackPanel Grid.Row="5" Grid.ColumnSpan="3" 
+                                        HorizontalAlignment="Right" 
+                                        Orientation="Horizontal"
+                                        Margin="0,6,0,0">
+                                <Button x:Name="ApplyProgramButton" 
+                                        Content="Apply" 
+                                        Style="{StaticResource ModernButton}"
+                                        Click="ApplyProgramButton_Click" 
+                                        IsEnabled="False"/>
+                            </StackPanel>
+                            
+                            <StackPanel Grid.Row="6" Grid.ColumnSpan="3" 
+                                        HorizontalAlignment="Right" 
+                                        Orientation="Horizontal">
+                                <Button x:Name="ClearProtectionButton" 
+                                        Content="Clear Prot." 
+                                        Style="{StaticResource SecondaryButton}"
+                                        Click="ClearProtectionButton_Click"  
+                                        IsEnabled="False"/>
+                            </StackPanel>
+                        </Grid>
+                    </GroupBox>
+                    
+                    <!-- Channel 1 Measurement Mode Section -->
+                    <GroupBox Header="Ch. 1 Measurement Mode" Style="{StaticResource ModernGroupBox}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <TextBlock Grid.Row="0" Grid.Column="0" 
+                                       Text="Current Range:" 
+                                       Style="{StaticResource ModernTextBlock}"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,8,0"/>
+                            <ComboBox Name="CurrentRangeComboBox" 
+                                      Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"  
+                                      Style="{StaticResource ModernComboBox}"
+                                      AllowDrop="True" 
+                                      SelectedIndex="0" 
+                                      SelectionChanged="ComboBox_SelectionChanged" 
+                                      ItemsSource="{Binding I1Ranges}"/>
+                            
+                            <TextBlock Grid.Row="1" Grid.Column="0"  
+                                       Text="Current Mode:" 
+                                       Style="{StaticResource ModernTextBlock}"
+                                       VerticalAlignment="Center"
+                                       Margin="0,8,8,0"/>
+                            <ComboBox Name="ACDCDetectorComboBox"  
+                                      Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"  
+                                      Style="{StaticResource ModernComboBox}"
+                                      AllowDrop="True" 
+                                      SelectedIndex="1" 
+                                      SelectionChanged="ACDCDetectorComboBox_SelectionChanged"
+                                      Margin="0,8,0,0">
+                                <ComboBoxItem Tag="DC" Content="DC"/>
+                                <ComboBoxItem Tag="ACDC" Content="ACDC"/>
+                            </ComboBox>
+                        </Grid>
+                    </GroupBox>
+                </StackPanel>
+            </ScrollViewer>
+            
+            <!-- Right Panel -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <!-- Tab Control -->
+                <TabControl Grid.Row="0" 
+                           TabStripPlacement="Top" 
+                           Style="{StaticResource ModernTabControl}">
+                    
+                    <TabItem x:Name="AcquisitionTabItem" 
+                             Header="Acquisition"
+                             Style="{StaticResource ModernTabItem}">
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" 
+                                     VerticalScrollBarVisibility="Auto"
+                                     Padding="12">
+                            <StackPanel Orientation="Horizontal">
+                                <GroupBox Header="Acquisition" Style="{StaticResource ModernGroupBox}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        
+                                        <StackPanel Grid.ColumnSpan="2" 
+                                                    Orientation="Horizontal" 
+                                                    Margin="0,0,0,8">
+                                            <RadioButton GroupName="AcqSenseMode" 
+                                                         x:Name="AcqVoltageRadioButton"  
+                                                         Tag="V" 
+                                                         Content="Voltage"
+                                                         Style="{StaticResource ModernRadioButton}"/>
+                                            <RadioButton GroupName="AcqSenseMode" 
+                                                         x:Name="AcqCurrentRadioButton" 
+                                                         Tag="I" 
+                                                         Content="Current" 
+                                                         IsChecked="True"
+                                                         Style="{StaticResource ModernRadioButton}"/>
+                                            <RadioButton GroupName="AcqSenseMode" 
+                                                         x:Name="AcqDVMRadioButton" 
+                                                         Tag="DVM" 
+                                                         Content="DVM"
+                                                         Style="{StaticResource ModernRadioButton}"/>
+                                        </StackPanel>
+                                        
+                                        <TextBlock x:Name="DurationLabel" 
+                                                   Grid.Row="1" Grid.Column="0" 
+                                                   Text="Time (s):" 
+                                                   Style="{StaticResource ModernTextBlock}"
+                                                   VerticalAlignment="Center"
+                                                   Margin="0,0,8,0"/>
+                                        <numericInput:DoubleBox x:Name="DurationTextBox" 
+                                                               Grid.Row="1" Grid.Column="1" 
+                                                               Value="{Binding AcqDuration}" 
+                                                               VerticalAlignment="Center" 
+                                                               MinValue="0"
+                                                               Style="{StaticResource ModernDoubleBox}"/>
+                                        
+                                        <TextBlock x:Name="NumPointsLabel" 
+                                                   Grid.Row="2" Grid.Column="0"  
+                                                   Text="Num Pts:" 
+                                                   Style="{StaticResource ModernTextBlock}"
+                                                   VerticalAlignment="Center"
+                                                   Margin="0,8,8,0"/>
+                                        <numericInput:IntBox x:Name="NumPtsTextBox" 
+                                                            Grid.Row="2" Grid.Column="1" 
+                                                            Value="{Binding AcqNumPoints}" 
+                                                            VerticalAlignment="Center" 
+                                                            MinValue="1" 
+                                                            MaxValue="4096"
+                                                            Style="{StaticResource ModernIntBox}"/>
+                                        
+                                        <TextBlock x:Name="NumSegmentsLabel" 
+                                                   Grid.Row="3" Grid.Column="0"  
+                                                   Text="Segments:" 
+                                                   Style="{StaticResource ModernTextBlock}"
+                                                   VerticalAlignment="Center"
+                                                   Margin="0,8,8,0"/>
+                                        <numericInput:IntBox x:Name="NumSegmentsTextBox" 
+                                                            Grid.Row="3" Grid.Column="1" 
+                                                            Value="{Binding AcqSegments}" 
+                                                            VerticalAlignment="Center" 
+                                                            MinValue="1"
+                                                            Style="{StaticResource ModernIntBox}"/>
+                                    </Grid>
+                                </GroupBox>
+                                
+                                <GroupBox Header="Trigger" Style="{StaticResource ModernGroupBox}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto" MinWidth="80"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        
+                                        <ComboBox x:Name="TriggerComboBox" 
+                                                  Grid.Row="0" Grid.ColumnSpan="3"  
+                                                  Style="{StaticResource ModernComboBox}"
+                                                  AllowDrop="True" 
+                                                  SelectedIndex="0"
+                                                  Margin="0,0,0,8">
+                                            <ComboBoxItem Tag="IMMED" Content="Immediate"/>
+                                            <ComboBoxItem Tag="POS" Content="Positive Slope"/>
+                                            <ComboBoxItem Tag="NEG" Content="Negative Slope"/>
+                                            <ComboBoxItem Tag="EITHER" Content="Either Slope"/>
+                                        </ComboBox>
+                                        
+                                        <TextBlock x:Name="TrigLevelLabel" 
+                                                   Grid.Column="0" Grid.Row="1" 
+                                                   Text="Trigger Level:" 
+                                                   Style="{StaticResource ModernTextBlock}"
+                                                   VerticalAlignment="Center"
+                                                   Margin="0,0,8,0"/>
+                                        <numericInput:DoubleBox x:Name="TrigLevelTextBox"   
+                                                               Grid.Row="1" Grid.Column="1" 
+                                                               Value="{Binding TriggerLevel}" 
+                                                               VerticalAlignment="Center"
+                                                               Style="{StaticResource ModernDoubleBox}"/>
+                                        <TextBlock Text=" A/V"   
+                                                   Grid.Row="1" Grid.Column="2" 
+                                                   VerticalAlignment="Center"
+                                                   Style="{StaticResource ModernTextBlock}"/>
+                                        
+                                        <TextBlock Grid.Row="2" Grid.Column="0"  
+                                                   Text="Hysteresis:" 
+                                                   Style="{StaticResource ModernTextBlock}"
+                                                   VerticalAlignment="Center"
+                                                   Margin="0,8,8,0"/>
+                                        <numericInput:DoubleBox x:Name="TrigHystTextBox"   
+                                                               Grid.Row="2" Grid.Column="1"  
+                                                               VerticalAlignment="Center"  
+                                                               MinValue="0" 
+                                                               Value="{Binding TriggerHysteresis}"
+                                                               Style="{StaticResource ModernDoubleBox}"/>
+                                        <TextBlock Text=" A/V"   
+                                                   Grid.Row="2" Grid.Column="2" 
+                                                   VerticalAlignment="Center" 
+                                                   Grid.ColumnSpan="2"
+                                                   Style="{StaticResource ModernTextBlock}"/>
+                                        
+                                        <TextBlock x:Name="SampleOffsetLabel" 
+                                                   Grid.Row="3" Grid.Column="0"  
+                                                   Text="Sample Offset:" 
+                                                   Style="{StaticResource ModernTextBlock}"
+                                                   VerticalAlignment="Center" 
+                                                   Grid.ColumnSpan="2"
+                                                   Margin="0,8,8,0"/>
+                                        <numericInput:IntBox x:Name="SampleOffsetTextBox" 
+                                                            Grid.Row="3" Grid.Column="1"  
+                                                            Value="{Binding TriggerOffset}" 
+                                                            VerticalAlignment="Center" 
+                                                            MinValue="-2000" 
+                                                            MaxValue="2000000000"
+                                                            Style="{StaticResource ModernIntBox}"/>
+                                    </Grid>
+                                </GroupBox>
+                                
+                                <StackPanel Margin="16,0,0,0">
+                                    <Button x:Name="AcquireButton" 
+                                            Content="Acquire" 
+                                            Style="{StaticResource ModernButton}"
+                                            Click="AcquireButton_Click" 
+                                            IsEnabled="False"/>
+                                    <Button x:Name="StopAcquireButton" 
+                                            Content="Stop" 
+                                            Style="{StaticResource SecondaryButton}"
+                                            Click="StopAcquireButton_Click" 
+                                            IsEnabled="False"/>
+                                    <Button x:Name="SaveAcquireButton" 
+                                            Content="Save..." 
+                                            Style="{StaticResource SecondaryButton}"
+                                            Click="SaveAcquireButton_Click" 
+                                            IsEnabled="False"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+
+                    <TabItem x:Name="LoggingTabItem" 
+                             Header="Logging"
+                             Style="{StaticResource ModernTabItem}">
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" 
+                                     VerticalScrollBarVisibility="Auto"
+                                     Padding="12">
+                            <StackPanel Orientation="Horizontal">
+                                <GroupBox Header="Acquisition" Style="{StaticResource ModernGroupBox}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        
+                                        <StackPanel Grid.ColumnSpan="2" 
+                                                    Orientation="Horizontal"
+                                                    Margin="0,0,0,8">
+                                            <RadioButton GroupName="LogSenseMode" 
+                                                         x:Name="LogVoltageRadioButton"  
+                                                         Tag="V" 
+                                                         Content="Voltage"
+                                                         Style="{StaticResource ModernRadioButton}"/>
+                                            <RadioButton GroupName="LogSenseMode" 
+                                                         x:Name="LogCurrentRadioButton" 
+                                                         Tag="I" 
+                                                         Content="Current" 
+                                                         IsChecked="True"
+                                                         Style="{StaticResource ModernRadioButton}"/>
+                                            <RadioButton GroupName="LogSenseMode" 
+                                                         x:Name="LogDVMRadioButton" 
+                                                         Tag="DVM" 
+                                                         Content="DVM"
+                                                         Style="{StaticResource ModernRadioButton}"/>
+                                        </StackPanel>
+                                        
+                                        <TextBlock Grid.Row="1" Grid.Column="0" 
+                                                   Text="Interval:" 
+                                                   Style="{StaticResource ModernTextBlock}"
+                                                   VerticalAlignment="Center"
+                                                   Margin="0,0,8,0"/>
+                                        <numericInput:DoubleBox x:Name="LogInterval" 
+                                                               MinValue="0" 
+                                                               Grid.Row="1" Grid.Column="1"
+                                                               Style="{StaticResource ModernDoubleBox}"/>
+                                    </Grid>
+                                </GroupBox>
+                                
+                                <GroupBox Header="Display" Style="{StaticResource ModernGroupBox}">
+                                    <StackPanel>
+                                        <CheckBox x:Name="LoggerMinCheckBox" 
+                                                  Content="Min" 
+                                                  Style="{StaticResource ModernCheckBox}"
+                                                  IsChecked="True" 
+                                                  Checked="LoggerCurveCheckBox_Checked"  
+                                                  Unchecked="LoggerCurveCheckBox_Checked"/>
+                                        <CheckBox x:Name="LoggerMeanCheckBox" 
+                                                  Content="Mean" 
+                                                  Style="{StaticResource ModernCheckBox}"
+                                                  IsChecked="True" 
+                                                  Checked="LoggerCurveCheckBox_Checked"  
+                                                  Unchecked="LoggerCurveCheckBox_Checked"/>
+                                        <CheckBox x:Name="LoggerMaxCheckBox" 
+                                                  Content="Max" 
+                                                  Style="{StaticResource ModernCheckBox}"
+                                                  IsChecked="True" 
+                                                  Checked="LoggerCurveCheckBox_Checked"  
+                                                  Unchecked="LoggerCurveCheckBox_Checked"/>
+                                        <CheckBox x:Name="LoggerRMSCheckBox" 
+                                                  Content="RMS" 
+                                                  Style="{StaticResource ModernCheckBox}"
+                                                  Checked="LoggerCurveCheckBox_Checked" 
+                                                  Unchecked="LoggerCurveCheckBox_Checked"/>
+                                    </StackPanel>
+                                </GroupBox>
+                                
+                                <StackPanel Margin="16,0,0,0">
+                                    <Button x:Name="LogButton" 
+                                            Content="Start Logging" 
+                                            Style="{StaticResource ModernButton}"
+                                            Click="LogButton_Click" 
+                                            IsEnabled="False"/>
+                                    <Button x:Name="StopLoggingButton" 
+                                            Content="Stop" 
+                                            Style="{StaticResource SecondaryButton}"
+                                            Click="StopLoggingButton_Click" 
+                                            IsEnabled="False"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+                </TabControl>
+                
+                <!-- Chart Area -->
+                <WindowsFormsHost Grid.Row="1" 
+                                  x:Name="ZedGraphHost"  
+                                  Margin="16"
+                                  Background="{StaticResource SurfaceBrush}">
+                    <zed:ZedGraphControl x:Name="zgc" />
+                </WindowsFormsHost>
+            </Grid>
+        </Grid>
+        
+        <!-- Modern Status Bar -->
+        <StatusBar Grid.Row="2" 
+                   Style="{StaticResource ModernStatusBar}">
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Grid>
@@ -57,246 +873,18 @@
                     </Grid>
                 </ItemsPanelTemplate>
             </StatusBar.ItemsPanel>
-            <StatusBarItem  x:Name="ConnectionStatusBarItem" Content="DISCONNECTED" Grid.Column="0"/>
-            <Separator   Grid.Column="1"/>
-            <StatusBarItem x:Name="ActivityStatusBarItem" Content="IDLE"  Grid.Column="2"/>
-            <Separator   Grid.Column="3"/>
-            <StatusBarItem x:Name="ModelStatusBarItem" Content="-----"  Grid.Column="4"/>
+            
+            <StatusBarItem x:Name="ConnectionStatusBarItem" 
+                           Content="DISCONNECTED" 
+                           Grid.Column="0"/>
+            <Separator Grid.Column="1"/>
+            <StatusBarItem x:Name="ActivityStatusBarItem" 
+                           Content="IDLE"  
+                           Grid.Column="2"/>
+            <Separator Grid.Column="3"/>
+            <StatusBarItem x:Name="ModelStatusBarItem" 
+                           Content="-----"  
+                           Grid.Column="4"/>
         </StatusBar>
-        <StackPanel DockPanel.Dock="Left">
-            <GroupBox Header="Connection" >
-                <StackPanel >
-                    <Label Content="Address:" />
-                    <ComboBox x:Name="AddressComboBox"  AllowDrop="True" IsEditable="True" Text="GPIB0::5::INSTR" />
-                    <Button x:Name="ConnectButton" Content="Connect"  Click="GoButton_Click"/>
-                    <Button x:Name="DisconnectButton" Content="Disconnect" Click="DisconnectButton_Click" IsEnabled="False"/>
-                </StackPanel>
-            </GroupBox>
-            <GroupBox Header="Channel 1">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="1*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="1*"/>
-                        <RowDefinition Height="1*"/>
-                    </Grid.RowDefinitions>
-                    <TextBlock x:Name="Ch1VLabel"  Text="+0.--- V" Grid.Row="0" Grid.Column="0"  HorizontalAlignment="Center" Style="{StaticResource TB_BoldFixed}"/>
-                    <TextBlock x:Name="Ch1ILabel" Text="+0.---- A" Grid.Row="0" Grid.Column="1"  HorizontalAlignment="Center" Style="{StaticResource TB_BoldFixed}"/>
-                    <TextBlock x:Name="Ch1StatusLabel"  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource TB_BoldFixed}" HorizontalAlignment="Center"  >
-                        <TextBlock.RenderTransform>
-                            <ScaleTransform ScaleX="0.8" ScaleY="0.8" />
-                        </TextBlock.RenderTransform><Run Text="OVP OCP CV CC+"/></TextBlock>
-                </Grid>
-            </GroupBox>
-            <GroupBox x:Name="CH2ReadbackGroupBox" Header="Channel 2" Style="{StaticResource Ch2_Visibility}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="1*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="1*"/>
-                        <RowDefinition Height="1*"/>
-                    </Grid.RowDefinitions>
-
-                    <TextBlock x:Name="Ch2VLabel"  Text="+0.--- V" Grid.Row="0" Grid.Column="0"  HorizontalAlignment="Center" Style="{StaticResource TB_BoldFixed}"/>
-                    <TextBlock x:Name="Ch2ILabel" Text="+0.---- A" Grid.Row="0" Grid.Column="1"  HorizontalAlignment="Center" Style="{StaticResource TB_BoldFixed}"/>
-                    <TextBlock x:Name="Ch2StatusLabel" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource TB_BoldFixed}" HorizontalAlignment="Center"  >
-                        <TextBlock.RenderTransform>
-                            <ScaleTransform ScaleX="0.8" ScaleY="0.8" />
-                        </TextBlock.RenderTransform><Run Text="OCP CV CC"/></TextBlock>
-                </Grid>
-            </GroupBox>
-            <GroupBox x:Name="DVMGroupBox" Header="DVM" Visibility="{Binding HasDVM, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="1*"/>
-                    </Grid.RowDefinitions>
-                    <TextBlock x:Name="DVMVLabel" Text="+0.--- V" Grid.Row="0" Grid.Column="0"  HorizontalAlignment="Center" Style="{StaticResource TB_BoldFixed}"/>
-                </Grid>
-            </GroupBox>
-            <GroupBox Header="Program">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="AUTO"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="1: " />
-                    <TextBlock x:Name="CH2ProgramLabel" Grid.Row="2" Grid.Column="0" Text="2: " Style="{StaticResource Ch2_Visibility}"/>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="V" HorizontalAlignment="Center" />
-                    <TextBlock Grid.Row="0" Grid.Column="2" Text="I" HorizontalAlignment="Center" />
-                    <numericInput:DoubleBox x:Name="CH1VTextBox" Grid.Row="1" Grid.Column="1" MinValue="0.0" Value="{Binding V1}" />
-                    <numericInput:DoubleBox x:Name="CH1ITextBox" Grid.Row="1" Grid.Column="2" MinValue="0.0" Value="{Binding I1}"  />
-                    <numericInput:DoubleBox x:Name="CH2VTextBox" Grid.Row="2" Grid.Column="1" MinValue="0.0" Value="{Binding V2}" Style="{StaticResource Ch2_Visibility}" />
-                    <numericInput:DoubleBox x:Name="CH2ITextBox" Grid.Row="2" Grid.Column="2" MinValue="0.0" Value="{Binding I2}" Style="{StaticResource Ch2_Visibility}"/>
-                    <StackPanel Grid.Row="3" Grid.ColumnSpan="3" Orientation="Horizontal" >
-                        <CheckBox x:Name="EnableOutputCheckbox" Content="EN  " />
-                        <CheckBox x:Name="OCPCheckbox" Content="OCP" />
-                    </StackPanel>
-                    <DockPanel Grid.Row="4" Grid.ColumnSpan="3"  Style="{StaticResource OVP_Visibility}">
-                        <CheckBox DockPanel.Dock="Left" x:Name="OVPCheckbox" Content="OVP: " VerticalAlignment="Center" />
-                        <numericInput:DoubleBox x:Name="OVPLevelTextBox" Value="{Binding OVPLevel}" CanValueBeNull="True" MinValue="0" MaxValue="22" />
-                    </DockPanel>
-                    <DockPanel Grid.Row="5" Grid.ColumnSpan="3" HorizontalAlignment="Right">
-                        <Button DockPanel.Dock="Right" x:Name="ApplyProgramButton" Content="Apply" Click="ApplyProgramButton_Click" IsEnabled="False" />
-                    </DockPanel>
-                    <DockPanel Grid.Row="6" Grid.ColumnSpan="3" HorizontalAlignment="Right">
-                        <Button DockPanel.Dock="Right" x:Name="ClearProtectionButton" Content="Clear Prot." Click="ClearProtectionButton_Click"  IsEnabled="False"/>
-                    </DockPanel>
-                </Grid>
-            </GroupBox>
-            <GroupBox Header="Ch. 1 Measurement Mode">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <Label Grid.Row="0" Grid.Column="0"  Content="Current Range: " VerticalAlignment="Center"/>
-                    <ComboBox Name="CurrentRangeComboBox" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"  AllowDrop="True" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged" ItemsSource="{Binding I1Ranges}">
-                    </ComboBox>
-
-                    <Label Grid.Row="1" Grid.Column="0"  Content="Current Mode: " VerticalAlignment="Center"/>
-                    <ComboBox Name="ACDCDetectorComboBox"  Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"  AllowDrop="True" SelectedIndex="1" SelectionChanged="ACDCDetectorComboBox_SelectionChanged">
-                        <ComboBoxItem Tag="DC" Content="DC"/>
-                        <!-- high range only? -->
-                        <ComboBoxItem Tag="ACDC" Content="ACDC"/>
-                    </ComboBox>
-                </Grid>
-            </GroupBox>
-        </StackPanel>
-        <TabControl TabStripPlacement="Top" DockPanel.Dock="Top" >
-            <TabItem x:Name="AcquisitionTabItem" Header="Acquisition">
-                <StackPanel Orientation="Horizontal">
-                    <GroupBox Header="Acquisition" >
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="auto"/>
-                            </Grid.RowDefinitions>
-                            <StackPanel Grid.ColumnSpan="3" Orientation="Horizontal">
-                                <RadioButton GroupName="AcqSenseMode" x:Name="AcqVoltageRadioButton"  Tag="V" Content="Voltage "/>
-                                <RadioButton GroupName="AcqSenseMode" x:Name="AcqCurrentRadioButton" Tag="I" Content="Current " IsChecked="True"/>
-                                <RadioButton GroupName="AcqSenseMode" x:Name="AcqDVMRadioButton" Tag="DVM" Content="DVM "/>
-                            </StackPanel>
-                            <Label x:Name="DurationLabel" Grid.Row="1" Grid.Column="0" Content="Time (s): " VerticalAlignment="Center"/>
-                            <numericInput:DoubleBox x:Name="DurationTextBox" Grid.Row="1" Grid.Column="1" Value="{Binding AcqDuration}" VerticalAlignment="Center" MinValue="0"/>
-                            <Label x:Name="NumPointsLabel" Grid.Row="2" Grid.Column="0"  Content="Num Pts: " VerticalAlignment="Center"/>
-                            <numericInput:IntBox x:Name="NumPtsTextBox" Grid.Row="2" Grid.Column="1" Value="{Binding AcqNumPoints}" VerticalAlignment="Center" MinValue="1" MaxValue="4096"/>
-                            <Label x:Name="NumSegmentsLabel" Grid.Row="3" Grid.Column="0"  Content="Segments: " VerticalAlignment="Center"/>
-                            <numericInput:IntBox x:Name="NumSegmentsTextBox" Grid.Row="3" Grid.Column="1" Value="{Binding AcqSegments}" VerticalAlignment="Center" MinValue="1" />
-                        </Grid>
-                    </GroupBox>
-                    <GroupBox Header="Trigger" >
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition  Width="auto" MinWidth="40pt"/>
-                                <ColumnDefinition  Width="auto"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <ComboBox x:Name="TriggerComboBox" Grid.Row="0" Grid.ColumnSpan="4"  AllowDrop="True" SelectedIndex="0">
-                                <ComboBoxItem Tag="IMMED" Content="Immediate"/>
-                                <ComboBoxItem Tag="POS" Content="Positive Slope"/>
-                                <ComboBoxItem Tag="NEG" Content="Negative Slope"/>
-                                <ComboBoxItem Tag="EITHER" Content="Either Slope"/>
-                            </ComboBox>
-                            <Label x:Name="TrigLevelLabel" Grid.Column="0" Grid.Row="1" Content="Trigger Level: " VerticalAlignment="Center"/>
-                            <numericInput:DoubleBox x:Name="TrigLevelTextBox"   Grid.Row="1" Grid.Column="1" Value="{Binding TriggerLevel}" VerticalAlignment="Center"/>
-                            <TextBlock Text=" A/V"   Grid.Row="1" Grid.Column="2" VerticalAlignment="Center"  />
-                            <Label Grid.Row="2" Grid.Column="0"  Content="Hysteresis: " VerticalAlignment="Center"/>
-                            <numericInput:DoubleBox x:Name="TrigHystTextBox"   Grid.Row="2" Grid.Column="1"  VerticalAlignment="Center"  MinValue="0" Value="{Binding TriggerHysteresis}" />
-                            <TextBlock Text=" A/V"   Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" Grid.ColumnSpan="2"/>
-                            <Label x:Name="SampleOffsetLabel" Grid.Row="3" Grid.Column="0"  Content="Sample Offset: " VerticalAlignment="Center" Grid.ColumnSpan="2"  />
-                            <numericInput:IntBox x:Name="SampleOffsetTextBox" Grid.Row="3" Grid.Column="1"  Value="{Binding TriggerOffset}" VerticalAlignment="Center" MinValue="-2000" MaxValue="2000000000" />
-                        </Grid>
-                    </GroupBox>
-                    <StackPanel>
-                        <Button x:Name="AcquireButton" Content="Acquire" Click="AcquireButton_Click" IsEnabled="False"/>
-                        <Button x:Name="StopAcquireButton" Content="Stop" Click="StopAcquireButton_Click" IsEnabled="False"/>
-                        <Button x:Name="SaveAcquireButton" Content="Save..." Click="SaveAcquireButton_Click" IsEnabled="False"/>
-                    </StackPanel>
-                </StackPanel>
-            </TabItem>
-
-            <TabItem x:Name="LoggingTabItem" Header="Logging">
-                <StackPanel Orientation="Horizontal">
-                    <GroupBox Header="Acquisition" >
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="auto"/>
-                            </Grid.RowDefinitions>
-                            <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal">
-                                <RadioButton GroupName="LogSenseMode" x:Name="LogVoltageRadioButton"  Tag="V" Content="Voltage "/>
-                                <RadioButton GroupName="LogSenseMode" x:Name="LogCurrentRadioButton" Tag="I" Content="Current " IsChecked="True"/>
-                                <RadioButton GroupName="LogSenseMode" x:Name="LogDVMRadioButton" Tag="DVM" Content="DVM "/>
-                            </StackPanel>
-                            <Label Grid.Row="1" Grid.Column="0" Content="Interval: "/>
-                            <numericInput:DoubleBox x:Name="LogInterval" MinValue="0" Grid.Row="1" Grid.Column="1"/>
-                        </Grid>
-                    </GroupBox>
-                    <GroupBox Header="Display">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <CheckBox x:Name="LoggerMinCheckBox" Content="Min" Grid.Row="0" IsChecked="True" Checked="LoggerCurveCheckBox_Checked"  Unchecked="LoggerCurveCheckBox_Checked"/>
-                            <CheckBox x:Name="LoggerMeanCheckBox" Content="Mean" Grid.Row="1" IsChecked="True" Checked="LoggerCurveCheckBox_Checked"  Unchecked="LoggerCurveCheckBox_Checked"/>
-                            <CheckBox x:Name="LoggerMaxCheckBox" Content="Max" Grid.Row="2" IsChecked="True" Checked="LoggerCurveCheckBox_Checked"  Unchecked="LoggerCurveCheckBox_Checked"/>
-                            <CheckBox x:Name="LoggerRMSCheckBox" Content="RMS" Grid.Row="3" Checked="LoggerCurveCheckBox_Checked" Unchecked="LoggerCurveCheckBox_Checked"/>
-                        </Grid>
-                    </GroupBox>
-                    <StackPanel>
-                        <Button x:Name="LogButton" Content="Start Logging" Click="LogButton_Click" IsEnabled="False"/>
-                        <Button x:Name="StopLoggingButton" Content="Stop" Click="StopLoggingButton_Click" IsEnabled="False"/>
-                    </StackPanel>
-                </StackPanel>
-            </TabItem>
-        </TabControl>
-        <WindowsFormsHost x:Name="ZedGraphHost"  Grid.Column="1" Margin="10">
-            <zed:ZedGraphControl x:Name="zgc" />
-        </WindowsFormsHost>
-    </DockPanel>
+    </Grid>
 </Window>
