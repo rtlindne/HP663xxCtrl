@@ -335,7 +335,15 @@ namespace HP663xxCtrl
       {
         var retList = new List<LoggerDatapoint>();
         WriteString("FETC:ARR:DLOG?");
-        x = dev.RawIO.Read(1);
+        try
+        {
+          x = dev.RawIO.Read(1);
+        }
+        catch
+        {
+          //Any exception just skip this read and try again next time
+          return new LoggerDatapoint[] { };
+        }
         if (x.Length != 1 || x[0] != '#')
           throw new FormatException();
         double swTime = LoggingStopwatch.Elapsed.TotalSeconds;
